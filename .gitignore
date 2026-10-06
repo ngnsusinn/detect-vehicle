@@ -1,0 +1,147 @@
+# ==============================================================================
+# GITIGNORE CHO DỰ ÁN NHẬN DIỆN BIỂN SỐ XE STREAMING (ALPR/ANPR ITS)
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# 1. MÔI TRƯỜNG ẢO & PYTHON PACKAGES (VIRTUAL ENVIRONMENTS)
+# ------------------------------------------------------------------------------
+venv/
+.venv/
+env/
+.env
+ENV/
+env.bak/
+venv.bak/
+anylabeling_env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# ------------------------------------------------------------------------------
+# 2. PYTHON BYTECODE & CACHE
+# ------------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# ------------------------------------------------------------------------------
+# 3. DỮ LIỆU THU THẬP & ẢNH DATASET (DUNG LƯỢNG LỚN)
+# Tuyệt đối không commit hàng chục nghìn ảnh chụp từ stream lên Git
+# ------------------------------------------------------------------------------
+dataset_collected/
+real_stream_dataset/
+workstation_batches/
+raw_frames/
+ocr_crops/
+dataset/
+datasets/
+data/
+
+# Lưu trữ nén các gói dữ liệu gán nhãn
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+
+# Các tệp video quay lại và luồng ghi hình
+*.mp4
+*.avi
+*.mkv
+*.mov
+*.ts
+*.m4s
+*.flv
+
+# Manifest nhật ký thu thập dung lượng lớn
+capture_manifest_*.jsonl
+
+# ------------------------------------------------------------------------------
+# 4. TRỌNG SỐ MÔ HÌNH HUẤN LUYỆN & CHECKPOINTS (MODEL WEIGHTS & EXPORTS)
+# Trọng số mô hình (.pt, .onnx, .engine...) lưu trữ trên Google Drive / MLflow
+# ------------------------------------------------------------------------------
+*.pt
+*.pth
+*.onnx
+*.engine
+*.tflite
+*.bin
+*.xml
+*.pdmodel
+*.pdiparams
+*.pdparams
+*.pdopt
+
+# Thư mục lưu kết quả train (Ultralytics / PaddleOCR / PyTorch)
+runs/
+checkpoints/
+exported_models/
+model_weights/
+weights/
+wandb/
+mlruns/
+lightning_logs/
+
+# ------------------------------------------------------------------------------
+# 5. CÔNG CỤ GÁN NHÃN & PHẦN MỀM THỨ BA
+# ------------------------------------------------------------------------------
+# File thực thi X-AnyLabeling portable
+X-AnyLabeling*.exe
+PaddleOCR/
+
+# ------------------------------------------------------------------------------
+# 6. FILE HỆ ĐIỀU HÀNH & TRÌNH SOẠN THẢO (OS & IDE SPECIFIC)
+# ------------------------------------------------------------------------------
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# VS Code & JetBrains PyCharm
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+
+# Temporary Office locks
+~$*.docx
+~$*.pptx
+~$*.xlsx
+checks.json
+
+# ------------------------------------------------------------------------------
+# 7. LOGS & FILE TẠM
+# ------------------------------------------------------------------------------
+*.log
+logs/
+temp/
+tmp/
