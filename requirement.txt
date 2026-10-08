@@ -1,1 +1,2 @@
+# Tham chiếu trực tiếp tệp requirements.txt
 -r requirements.txt

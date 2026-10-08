@@ -21,6 +21,7 @@ import os
 import sys
 import time
 import math
+import json
 import queue
 import threading
 import subprocess
@@ -94,6 +95,39 @@ def disable_high_precision_timer():
             ctypes.windll.winmm.timeEndPeriod(1)
         except Exception:
             pass
+
+
+# ==============================================================================
+# HÀM BĂM CẢM NHẬN (PERCEPTUAL HASH) - LỌC TRÙNG LẶP KHI XE DỪNG ĐÈN ĐỎ
+# ==============================================================================
+
+def calculate_phash(image_bgr):
+    """
+    Tính mã băm cảm nhận (Perceptual Hash) 64-bit bằng DCT qua OpenCV.
+    Kháng nhiễu hạt nhẹ, nén video và thay đổi ánh sáng nhỏ.
+    """
+    if image_bgr is None:
+        return None
+    try:
+        resized = cv2.resize(image_bgr, (32, 32), interpolation=cv2.INTER_AREA)
+        gray = cv2.cvtColor(resized, cv2.COLOR_BGR2GRAY)
+        dct = cv2.dct(np.float32(gray))
+        dct_low = dct[:8, :8]
+        avg = (np.sum(dct_low) - dct_low[0, 0]) / 63.0
+        return (dct_low > avg).flatten()
+    except Exception:
+        return None
+
+
+def hamming_distance(hash1, hash2):
+    """
+    Tính khoảng cách Hamming (0 - 64) giữa 2 mã băm pHash.
+    - dist <= 6: Hai ảnh giống nhau > 90-95% (xe dừng đèn đỏ / cảnh tĩnh không đổi).
+    - dist > 6: Có phương tiện mới di chuyển vào khung hình.
+    """
+    if hash1 is None or hash2 is None:
+        return 999
+    return int(np.count_nonzero(hash1 != hash2))
 
 
 # ==============================================================================
@@ -415,7 +449,10 @@ class AsyncDiskWriter(threading.Thread):
                 break
 
             sharpness_score = 0.0
-            if len(item) == 4:
+            motion_state = "moving"
+            if len(item) == 5:
+                frame, timestamp_epoch, seq, sharpness_score, motion_state = item
+            elif len(item) == 4:
                 frame, timestamp_epoch, seq, sharpness_score = item
             else:
                 frame, timestamp_epoch, seq = item
@@ -437,10 +474,11 @@ class AsyncDiskWriter(threading.Thread):
 
                 timestamp_str = now.strftime("%Y%m%d_%H%M%S")
                 millis = int(now.microsecond / 1000)
+                # TÊN TỆP CHUẨN ĐỒNG NHẤT: Lưu 100% ảnh vào chung 1 thư mục
                 file_name = f"{self.camera_tag}_{timestamp_str}_{millis:03d}_{seq:06d}.jpg"
                 file_path = os.path.join(self.current_save_dir, file_name)
 
-                # Nén JPEG trực tiếp trong RAM bằng imencode (Chất lượng 100% giữ nguyên chi tiết cạnh biên biển số)
+                # Nén JPEG trực tiếp trong RAM bằng imencode (Chất lượng 100% giữ nguyên chi tiết)
                 encode_params = [int(cv2.IMWRITE_JPEG_QUALITY), self.jpeg_quality]
                 success, enc_buf = cv2.imencode('.jpg', frame, encode_params)
 
@@ -676,6 +714,9 @@ class VideoCaptureWorker(threading.Thread):
                             # Chọn frame có độ nét cao nhất (loại bỏ hoàn toàn motion blur)
                             sharp_candidates.sort(key=lambda x: x[2], reverse=True)
                             best_frame, best_time, best_score = sharp_candidates[0]
+
+                            # LƯU 100% ẢNH VÀO CHUNG 1 THƯ MỤC - KHÔNG BỎ ẢNH NÀO
+                            # Việc phân loại phương tiện và trạng thái do dán nhãn & mô hình đảm nhiệm
                             self.total_captured += 1
                             try:
                                 self.save_queue.put_nowait((best_frame, best_time, self.total_captured, best_score))
@@ -702,7 +743,7 @@ class VideoCaptureWorker(threading.Thread):
 class StreamCollectorApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("Hệ Thống Thu Thập Dữ Liệu Video Streaming (ALPR ITS 2026)")
+        self.root.title("Hệ Thống Thu Thập Dữ Liệu Video Streaming (Đếm & Đo Tốc Độ Xe ITS 2026)")
         self.root.geometry("1280x820")
         self.root.minsize(1050, 680)
 
@@ -838,7 +879,7 @@ class StreamCollectorApp:
         tk.Entry(dir_frame, textvariable=self.base_dir_var, bg="#313244", fg="#ffffff", insertbackground="#ffffff", relief="flat", font=("Segoe UI", 9)).pack(side="left", fill="x", expand=True, ipady=4)
         tk.Button(dir_frame, text="Duyệt...", bg="#45475a", fg="#ffffff", relief="flat", padx=8, command=self.browse_output_dir).pack(side="right", padx=(5, 0))
 
-        # Tần suất chụp & Quy tắc 3h
+        # Tần suất chụp & Quy tắc lưu trữ
         param_grid = tk.Frame(config_box, bg=self.panel_bg)
         param_grid.pack(fill="x", pady=(0, 5))
 
@@ -850,13 +891,16 @@ class StreamCollectorApp:
         tk.Label(param_grid, text="Chia folder:", bg=self.panel_bg, fg=self.text_color).grid(row=1, column=0, sticky="w", pady=4)
         tk.Label(param_grid, text="Mỗi 1 giờ / 1 folder", font=("Segoe UI", 9, "bold"), fg="#89b4fa", bg=self.panel_bg).grid(row=1, column=1, columnspan=2, sticky="w", pady=4)
 
+        tk.Label(config_box, text="💡 Cứ mỗi 3s chụp 1 ảnh nét nhất. Lưu 100% ảnh chung thư mục để sẵn sàng dán nhãn.",
+                 font=("Segoe UI", 8, "italic"), fg="#a6adc8", bg=self.panel_bg, wraplength=340, justify="left").pack(anchor="w", pady=(2, 6))
+
         # -------------------------------------------------------------
         # KHU VỰC THỐNG KÊ (DASHBOARD STATS)
         # -------------------------------------------------------------
         stats_box = ttk.LabelFrame(left_col, text="📊 THỐNG KÊ THU THẬP", style="Dark.TLabelframe", padding=12)
         stats_box.pack(fill="x", pady=(0, 10))
 
-        self.stat_captured_lbl = tk.Label(stats_box, text="📸 Đã chụp: 0 ảnh", font=("Segoe UI", 11, "bold"), fg=self.success_color, bg=self.panel_bg)
+        self.stat_captured_lbl = tk.Label(stats_box, text="📸 Đã chụp & lưu: 0 ảnh", font=("Segoe UI", 11, "bold"), fg=self.success_color, bg=self.panel_bg)
         self.stat_captured_lbl.pack(anchor="w", pady=2)
 
         self.stat_slot_lbl = tk.Label(stats_box, text="📁 Khung giờ lưu: Đang chờ...", font=("Segoe UI", 9), fg="#bac2de", bg=self.panel_bg)
@@ -1001,7 +1045,7 @@ class StreamCollectorApp:
                 # 2. Cập nhật số liệu chữ cách quãng 250ms (chống layout thrashing)
                 now = time.time()
                 if now - self.last_stat_update >= 0.25:
-                    self.stat_captured_lbl.config(text=f"📸 Đã chụp: {count} ảnh")
+                    self.stat_captured_lbl.config(text=f"📸 Đã chụp & lưu: {count} ảnh")
                     self.stat_countdown_lbl.config(text=f"⏳ Chụp ảnh tiếp theo sau: {next_in:.1f} s")
                     self.stat_fps_lbl.config(text=f"⚡ FPS: {fps:.1f} | Độ phân giải: {res}")
                     self.last_stat_update = now

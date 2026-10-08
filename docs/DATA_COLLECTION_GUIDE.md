@@ -1,7 +1,7 @@
 # HƯỚNG DẪN THU THẬP DỮ LIỆU ẢNH THỰC TẾ TỪ LUỒNG STREAMING
 ## BỘ CÔNG CỤ THU THẬP TỰ ĐỘNG THEO CHU KỲ & KHUNG GIỜ (STREAM DATA COLLECTOR)
 **Phiên bản:** 1.0.0  
-**Tác giả:** Đội ngũ Kỹ thuật & MLOps Dự án Nhận diện Biển số Xe ITS 2026  
+**Tác giả:** Đội ngũ Kỹ thuật & MLOps Dự án Đếm & Đo Tốc Độ Phương Tiện ITS 2026  
 
 ---
 
@@ -40,7 +40,7 @@ dataset_collected/
 ### Quy ước đặt tên tệp ảnh:
 `<Tên_Camera>_<NămThángNgày>_<GiờPhútGiây>_<MiliGiây>_<SốThứTựẢnh>.jpg` (hoặc `.png`)
 - **Ví dụ:** `cam_lane01_20261005_091530_125_000142.jpg`
-- **Định dạng & Chất lượng:** Định dạng JPEG chất lượng tối đa ($100\%$) hoặc PNG Lossless, giữ nguyên độ phân giải gốc của camera (1080p hoặc 2K) phục vụ nắn phẳng biển số và gán nhãn OCR rõ nét nhất.
+- **Định dạng & Chất lượng:** Định dạng JPEG chất lượng tối đa ($100\%$) hoặc PNG Lossless, giữ nguyên độ phân giải gốc của camera (1080p hoặc 2K) phục vụ gán nhãn phát hiện phương tiện và đo tốc độ chính xác nhất.
 
 ---
 

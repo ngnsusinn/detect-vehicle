@@ -38,7 +38,7 @@ set TAG=%~2
 if "%TAG%"=="" set TAG=cam36
 
 set INTERVAL=%~3
-if "%INTERVAL%"=="" set INTERVAL=1.0
+if "%INTERVAL%"=="" set INTERVAL=3.0
 
 set FORMAT=%~4
 if "%FORMAT%"=="" set FORMAT=jpg

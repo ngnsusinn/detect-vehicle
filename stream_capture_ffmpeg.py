@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 ================================================================================
-HỆ THỐNG TRÍCH XUẤT & CHỤP ẢNH CHẤT LƯỢNG CAO DỰA TRÊN FFMPEG (ALPR ITS 2026)
+HỆ THỐNG TRÍCH XUẤT & CHỤP ẢNH CHẤT LƯỢNG CAO DỰA TRÊN FFMPEG (HỆ THỐNG ĐẾM & ĐO TỐC ĐỘ XE ITS 2026)
 HIGH-FIDELITY STREAM CAPTURE ENGINE POWERED BY FFMPEG & SHARPNESS FILTER
 ================================================================================
 Giải quyết triệt để vấn đề: "Xem stream thì nét nhưng capture ảnh bị mờ/giảm chất lượng":
@@ -20,6 +20,7 @@ import os
 import sys
 import time
 import math
+import json
 import shutil
 import argparse
 import subprocess
@@ -162,7 +163,7 @@ def compute_sharpness(image_bgr_or_gray):
     """
     Tính điểm sắc nét bằng phương sai toán tử Laplacian (Laplacian Variance).
     - Ảnh mờ chuyển động (motion blur) hoặc out-net: điểm thấp (< 100).
-    - Ảnh sắc nét, rõ viền biển số xe: điểm cao (> 300 - 1500+).
+    - Ảnh sắc nét, rõ viền thân xe và bánh xe: điểm cao (> 300 - 1500+).
     """
     if not HAS_CV2 or image_bgr_or_gray is None:
         return 0.0
@@ -173,6 +174,28 @@ def compute_sharpness(image_bgr_or_gray):
     lap = cv2.Laplacian(gray, cv2.CV_64F)
     score = lap.var()
     return float(score)
+
+
+def calculate_phash(image_bgr):
+    """Tính mã băm cảm nhận (Perceptual Hash) 64-bit bằng DCT để phát hiện xe dừng đèn đỏ"""
+    if not HAS_CV2 or image_bgr is None:
+        return None
+    try:
+        resized = cv2.resize(image_bgr, (32, 32), interpolation=cv2.INTER_AREA)
+        gray = cv2.cvtColor(resized, cv2.COLOR_BGR2GRAY)
+        dct = cv2.dct(np.float32(gray))
+        dct_low = dct[:8, :8]
+        avg = (np.sum(dct_low) - dct_low[0, 0]) / 63.0
+        return (dct_low > avg).flatten()
+    except Exception:
+        return None
+
+
+def hamming_distance(hash1, hash2):
+    """Khoảng cách Hamming: <= 6 nghĩa là hai ảnh giống nhau > 90% (xe dừng / cảnh tĩnh)"""
+    if hash1 is None or hash2 is None:
+        return 999
+    return int(np.count_nonzero(hash1 != hash2))
 
 
 # ==============================================================================
@@ -241,7 +264,6 @@ def run_ffmpeg_sharpness_capture(source_url, base_dir, camera_tag, interval=3.0,
         ffmpeg_cmd.extend(["-rtsp_transport", "tcp"])
 
     ffmpeg_cmd.extend([
-        "-flags:v", "+accurate_rnd+full_chroma_int",
         "-i", source_url,
         "-f", "rawvideo",
         "-pix_fmt", "bgr24",
@@ -309,6 +331,7 @@ def run_ffmpeg_sharpness_capture(source_url, base_dir, camera_tag, interval=3.0,
                         timestamp_str = now.strftime("%Y%m%d_%H%M%S")
                         millis = int(now.microsecond / 1000)
                         ext = "png" if image_format.lower() == "png" else "jpg"
+                        # TÊN TỆP ĐỒNG NHẤT: Lưu 100% ảnh vào chung 1 thư mục
                         file_name = f"{camera_tag}_{timestamp_str}_{millis:03d}_{total_captured:06d}.{ext}"
                         file_path = os.path.join(current_save_dir, file_name)
 
@@ -382,34 +405,37 @@ def run_ffmpeg_native_capture(source_url, base_dir, camera_tag, interval=3.0,
             else:
                 vf_filter = f"fps=1/{interval}"
 
-            pattern_path = os.path.join(target_dir, f"{camera_tag}_%Y%m%d_%H%M%S_%06d.{ext}")
+            # Chuẩn hóa đường dẫn thư mục sang forward slash chống lỗi escape trên Windows
+            norm_target_dir = os.path.abspath(target_dir).replace("\\", "/")
+            os.makedirs(norm_target_dir, exist_ok=True)
+
+            date_prefix = now.strftime("%Y%m%d_%H%M%S")
+            pattern_path = f"{norm_target_dir}/{camera_tag}_{date_prefix}_%06d.{ext}"
 
             ffmpeg_cmd = [
                 "ffmpeg",
                 "-hide_banner",
-                "-loglevel", "info",
+                "-loglevel", "warning",
             ]
 
             if source_url.startswith("rtsp://"):
                 ffmpeg_cmd.extend(["-rtsp_transport", "tcp"])
 
             ffmpeg_cmd.extend([
-                "-flags:v", "+accurate_rnd+full_chroma_int",
                 "-i", source_url,
                 "-t", str(int(time_left_sec)),
                 "-vf", vf_filter,
-                "-strftime", "1",
             ])
 
             if ext == "png":
                 ffmpeg_cmd.extend(["-c:v", "png"])
             else:
-                # -q:v 1 là chất lượng JPEG cao nhất của libjpeg-turbo (quản lý bảng lượng tử tốt nhất)
+                # -q:v 1 là chất lượng JPEG cao nhất (100%)
                 ffmpeg_cmd.extend(["-q:v", "1"])
 
             ffmpeg_cmd.append(pattern_path)
 
-            print(f"▶ Bắt đầu trích xuất FFmpeg vào: {target_dir}")
+            print(f"▶ Bắt đầu trích xuất FFmpeg vào: {norm_target_dir}")
             sub_proc = subprocess.run(ffmpeg_cmd)
 
             if sub_proc.returncode != 0:
