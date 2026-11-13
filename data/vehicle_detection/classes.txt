@@ -1,0 +1,8 @@
+motorcycle
+car
+electric_bicycle
+bicycle
+bus
+truck
+container_truck
+special_vehicle

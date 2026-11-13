@@ -1,0 +1,8 @@
+{
+  "camera_id": "cam01",
+  "image_size": [1920, 1080],
+  "source_points_px": [[672, 486], [1248, 486], [1728, 972], [192, 972]],
+  "target_points_m": [[0, 0], [8, 0], [8, 25], [0, 25]],
+  "count_line_px": [[288, 756], [1632, 756]],
+  "measurement_note": "EXAMPLE ONLY: replace coordinates and distances with measurements from this camera."
+}

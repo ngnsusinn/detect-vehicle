@@ -1,4 +1,10 @@
 # HƯỚNG DẪN QUY TRÌNH GÁN NHÃN MÁY CON, HUẤN LUYỆN GOOGLE COLAB & TRIỂN KHAI MÁY CLIENT
+
+> Đường dẫn lưu dữ liệu và quy trình bàn giao hiện tại được quy định tại
+> [DATA_GUIDE.md](DATA_GUIDE.md). Xem [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md)
+> để biết vị trí mã nguồn sau refactor. Các đường dẫn Colab trong tài liệu này
+> là ví dụ triển khai; cần tạo lại `data.yaml` với đường dẫn thực tế trên máy train.
+
 ## HỆ THỐNG ĐẾM VÀ ĐO TỐC ĐỘ PHƯƠNG TIỆN GIAO THÔNG TỪ LUỒNG VIDEO STREAMING
 **Mã tài liệu:** GUIDE-SPEED-COUNT-COLAB-CLIENT-2026  
 **Phiên bản:** 2.0.0 (Cập nhật Toàn diện Bài toán Đếm Xe & Đo Tốc độ)  

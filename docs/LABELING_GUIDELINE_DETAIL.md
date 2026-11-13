@@ -1,4 +1,10 @@
 # CẨM NANG HƯỚNG DẪN GÁN NHÃN DỮ LIỆU CHI TIẾT (STEP-BY-STEP ANNOTATION GUIDELINE)
+
+> Đường dẫn lưu dữ liệu và quy trình bàn giao hiện tại được quy định tại
+> [DATA_GUIDE.md](DATA_GUIDE.md). Xem [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md)
+> để biết vị trí mã nguồn sau refactor. Các đường dẫn Colab trong tài liệu này
+> là ví dụ triển khai; cần tạo lại `data.yaml` với đường dẫn thực tế trên máy train.
+
 ## DỰ ÁN: HỆ THỐNG ĐẾM VÀ ĐO TỐC ĐỘ PHƯƠNG TIỆN GIAO THÔNG (ITS 2026)
 **Mã tài liệu:** GUIDE-LABELING-ITS-2026  
 **Phiên bản:** 2.1.0  

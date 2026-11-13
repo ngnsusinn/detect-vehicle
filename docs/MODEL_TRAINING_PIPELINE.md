@@ -1,4 +1,10 @@
 # TÀI LIỆU QUY TRÌNH HUẤN LUYỆN MÔ HÌNH PHÁT HIỆN & PHÂN LOẠI PHƯƠNG TIỆN TỪ ĐẦU
+
+> Đường dẫn lưu dữ liệu và quy trình bàn giao hiện tại được quy định tại
+> [DATA_GUIDE.md](DATA_GUIDE.md). Xem [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md)
+> để biết vị trí mã nguồn sau refactor. Các đường dẫn Colab trong tài liệu này
+> là ví dụ triển khai; cần tạo lại `data.yaml` với đường dẫn thực tế trên máy train.
+
 ## HỆ THỐNG ĐẾM VÀ ĐO TỐC ĐỘ PHƯƠNG TIỆN GIAO THÔNG (ITS 2026)
 **Phiên bản:** 2.0.0  
 **Tác giả:** Đội ngũ Kỹ sư Học sâu & MLOps (Deep Learning & MLOps Team)  

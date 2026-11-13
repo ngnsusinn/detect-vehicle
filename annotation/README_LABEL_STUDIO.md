@@ -22,11 +22,11 @@ pip install label-studio
 # 3. Cho phép truy cập tệp cục bộ (Local File Serving) nếu nạp ảnh từ ổ cứng
 # Trên Windows CMD:
 set LABEL_STUDIO_LOCAL_FILES_SERVING_ENABLED=true
-set LABEL_STUDIO_LOCAL_FILES_DOCUMENT_ROOT=C:\Users\ngnsusinn\Documents\detect-plate-vehicle
+set LABEL_STUDIO_LOCAL_FILES_DOCUMENT_ROOT=C:\Users\ngnsusinn\Documents\detect-vehicle
 
 # Trên Windows PowerShell:
 $env:LABEL_STUDIO_LOCAL_FILES_SERVING_ENABLED="true"
-$env:LABEL_STUDIO_LOCAL_FILES_DOCUMENT_ROOT="C:\Users\ngnsusinn\Documents\detect-plate-vehicle"
+$env:LABEL_STUDIO_LOCAL_FILES_DOCUMENT_ROOT="C:\Users\ngnsusinn\Documents\detect-vehicle"
 
 # 4. Khởi chạy Label Studio (Mặc định chạy tại http://localhost:8080)
 label-studio start
@@ -47,7 +47,7 @@ docker run -it -p 8080:8080 \
 1. Đăng nhập vào giao diện Label Studio (`http://localhost:8080`).
 2. Bấm **Create Project**, đặt tên dự án (ví dụ: `Vehicle_Detection_Speed_Counting`).
 3. Chuyển sang thẻ **Labeling Setup** $\rightarrow$ Chọn **Custom template** (hoặc bấm vào nút **Code** ở góc trên bên phải khung thiết lập).
-4. Xóa toàn bộ nội dung mặc định và dán nội dung từ tệp `annotation/label_studio_yolo_simple.xml` (hoặc `annotation/label_studio_template.xml`):
+4. Xóa toàn bộ nội dung mặc định và dán nội dung từ tệp `annotation/label_studio_template.xml`:
 
 ```xml
 <View>
@@ -101,15 +101,21 @@ docker run -it -p 8080:8080 \
 
 ## 5. XUẤT DỮ LIỆU ĐỂ HUẤN LUYỆN YOLOV11 (EXPORT DATASET)
 
+Dự án đã có cấu trúc lưu dữ liệu tại [`data/`](../data/README.md): lưu bản xuất
+gốc vào `data/label_studio/exports/`, giải nén theo từng đợt vào
+`data/label_studio/extracted/`, sau đó đưa các cặp ảnh/nhãn đã kiểm duyệt vào
+`data/vehicle_detection/`. Xem hướng dẫn tại liên kết trên trước khi gộp các
+đợt dữ liệu, đặc biệt là thứ tự class ID và cách chia train/val/test.
+
 1. Trong dự án Label Studio, bấm nút **Export** ở góc trên bên phải.
-2. Chọn định dạng **YOLO**: Label Studio sẽ xuất một file nén `.zip` gồm:
-   - Thư mục `images/`: Chứa các ảnh gốc.
+2. Chọn định dạng **YOLO** và lấy kèm ảnh nếu tùy chọn xuất hỗ trợ. Kiểm tra file nén `.zip` sau khi xuất:
+   - Thư mục `images/`: Chứa các ảnh gốc nếu bản xuất có kèm ảnh; nếu không, bổ sung ảnh đúng cặp từ kho ảnh nguồn.
    - Thư mục `labels/`: Chứa các tệp nhãn `.txt` tương ứng với mỗi ảnh theo chuẩn YOLO:
      ```text
      <class_id> <x_center> <y_center> <width> <height>
      ```
      (Mọi tọa độ đều được chuẩn hóa trong khoảng $[0.0, 1.0]$).
-   - Tệp `classes.txt`: Danh sách tên các nhãn theo đúng thứ tự class ID từ `0` đến `7`.
+   - Tệp `classes.txt`: Mapping class ID của bản xuất. Đối chiếu với `data/vehicle_detection/classes.txt`; nếu thứ tự khác phải chuyển ID trong nhãn trước khi gộp.
 
 ### File cấu hình `data.yaml` chuẩn cho YOLOv11:
 ```yaml

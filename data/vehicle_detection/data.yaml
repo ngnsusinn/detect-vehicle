@@ -1,0 +1,15 @@
+# Thay path bằng đường dẫn tuyệt đối trên máy huấn luyện/Colab trước khi dùng.
+path: data/vehicle_detection
+train: images/train
+val: images/val
+test: images/test
+
+names:
+  0: motorcycle
+  1: car
+  2: electric_bicycle
+  3: bicycle
+  4: bus
+  5: truck
+  6: container_truck
+  7: special_vehicle

@@ -1,0 +1,13 @@
+<View>
+  <Image name="image" value="$image" zoom="true" />
+  <RectangleLabels name="label" toName="image" canRotate="false">
+    <Label value="motorcycle" background="#FFA39E" hotkey="1" />
+    <Label value="car" background="#91CAFF" hotkey="2" />
+    <Label value="electric_bicycle" background="#FFD591" hotkey="3" />
+    <Label value="bicycle" background="#ADC6FF" hotkey="4" />
+    <Label value="bus" background="#D3ADF7" hotkey="5" />
+    <Label value="truck" background="#87E8DE" hotkey="6" />
+    <Label value="container_truck" background="#FFADD2" hotkey="7" />
+    <Label value="special_vehicle" background="#D9D9D9" hotkey="8" />
+  </RectangleLabels>
+</View>

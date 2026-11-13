@@ -1,4 +1,10 @@
 # HƯỚNG DẪN THU THẬP DỮ LIỆU ẢNH THỰC TẾ TỪ LUỒNG STREAMING
+
+> Đường dẫn lưu dữ liệu và quy trình bàn giao hiện tại được quy định tại
+> [DATA_GUIDE.md](DATA_GUIDE.md). Xem [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md)
+> để biết vị trí mã nguồn sau refactor. Các đường dẫn Colab trong tài liệu này
+> là ví dụ triển khai; cần tạo lại `data.yaml` với đường dẫn thực tế trên máy train.
+
 ## BỘ CÔNG CỤ THU THẬP TỰ ĐỘNG THEO CHU KỲ & KHUNG GIỜ (STREAM DATA COLLECTOR)
 **Phiên bản:** 1.0.0  
 **Tác giả:** Đội ngũ Kỹ thuật & MLOps Dự án Đếm & Đo Tốc Độ Phương Tiện ITS 2026  
@@ -21,7 +27,7 @@ Nhằm đáp ứng yêu cầu kỹ thuật nghiêm ngặt: **$100\%$ dữ liệu
 Dữ liệu được tổ chức theo cấu trúc phân cấp khoa học, trực quan, hỗ trợ theo dõi theo ngày, theo camera và theo khung thời gian chiếu sáng trong ngày:
 
 ```text
-dataset_collected/
+data/raw/frames/
 ├── cam_lane01/
 │   ├── 2026-10-05_08h-09h/
 │   │   ├── cam_lane01_20261005_080003_120_000001.jpg
@@ -77,7 +83,7 @@ python collector_gui.py
 | [cam_lane01                      ] |       +------------------------------------+       |
 |                                    |                                                    |
 | Thư mục lưu Dataset:               |                                                    |
-| [C:\...\dataset_collected  ][Duyệt]|                                                    |
+| [C:\...\data\raw\frames  ][Duyệt]|                                                    |
 |                                    +----------------------------------------------------+
 | Chu kỳ: [ 3.0 ] s/ảnh (3h/1 folder)| 📝 NHẬT KÝ THU THẬP DỮ LIỆU                        |
 |                                    | [10:15:27] 📸 [#000140] Đã lưu cam_lane01_...     |
@@ -150,7 +156,7 @@ Sau khi thu thập được khối lượng ảnh lớn từ các khung giờ kh
 
 ```bash
 # Chia dữ liệu trong khung giờ 09h-12h cho 4 máy con gán nhãn
-python training/stream_frame_extractor.py --stream "none" --split-machines 4
+python training/stream_frame_extractor.py --split-from "data/raw/frames/cam01/2026-11-13_08h-09h" --split-machines 4
 ```
 
 Các thư mục máy con (`may_con_01`, `may_con_02`, `may_con_03`, `may_con_04`) sẽ được tạo tự động để chuyển sang các trạm làm việc theo tài liệu [docs/DISTRIBUTED_ANNOTATION_COLAB_GUIDE.md](DISTRIBUTED_ANNOTATION_COLAB_GUIDE.md).
