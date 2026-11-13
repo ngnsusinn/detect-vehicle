@@ -49,21 +49,10 @@ docker run -it -p 8080:8080 \
 3. Chuyển sang thẻ **Labeling Setup** $\rightarrow$ Chọn **Custom template** (hoặc bấm vào nút **Code** ở góc trên bên phải khung thiết lập).
 4. Xóa toàn bộ nội dung mặc định và dán nội dung từ tệp `annotation/label_studio_template.xml`:
 
-```xml
-<View>
-  <Image name="image" value="$image" zoom="true" zoomBy="1.5" rotateControl="true"/>
-  <RectangleLabels name="label" toName="image" canRotate="false">
-    <Label value="motorcycle" background="#FFA39E" hotkey="1"/>
-    <Label value="car" background="#91CAFF" hotkey="2"/>
-    <Label value="electric_bicycle" background="#FFD591" hotkey="3"/>
-    <Label value="bicycle" background="#ADC6FF" hotkey="4"/>
-    <Label value="bus" background="#D3ADF7" hotkey="5"/>
-    <Label value="truck" background="#87E8DE" hotkey="6"/>
-    <Label value="container_truck" background="#FFADD2" hotkey="7"/>
-    <Label value="special_vehicle" background="#D9D9D9" hotkey="8"/>
-  </RectangleLabels>
-</View>
-```
+Dùng toàn bộ file XML hiện hành: [label_studio_template.xml](label_studio_template.xml).
+Xem [hướng dẫn interface và đối chiếu yêu cầu](LABELING_INTERFACE.md) để nhập thuộc tính từng xe,
+xử lý ảnh âm, kiểm duyệt và xuất cả JSON + YOLO. File XML là cấu hình chuẩn duy nhất;
+không dùng lại đoạn template 8 nhãn cũ vì thiếu trạng thái xe và các trường QA.
 5. Bấm **Save** để hoàn tất cấu hình giao diện.
 
 ---

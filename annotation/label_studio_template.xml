@@ -1,13 +1,91 @@
 <View>
-  <Image name="image" value="$image" zoom="true" />
-  <RectangleLabels name="label" toName="image" canRotate="false">
-    <Label value="motorcycle" background="#FFA39E" hotkey="1" />
-    <Label value="car" background="#91CAFF" hotkey="2" />
-    <Label value="electric_bicycle" background="#FFD591" hotkey="3" />
-    <Label value="bicycle" background="#ADC6FF" hotkey="4" />
-    <Label value="bus" background="#D3ADF7" hotkey="5" />
-    <Label value="truck" background="#87E8DE" hotkey="6" />
-    <Label value="container_truck" background="#FFADD2" hotkey="7" />
-    <Label value="special_vehicle" background="#D9D9D9" hotkey="8" />
+  <!-- Input: task.data.image. Keep image/label names for existing predictions. -->
+  <Header value="GÁN NHÃN PHƯƠNG TIỆN — ĐẾM XE VÀ ĐO TỐC ĐỘ" />
+  <View style="padding:12px; background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; margin-bottom:12px">
+    <Header size="5" value="Một xe = một box, một trong 8 lớp. Gán cả xe chạy và xe dừng." />
+    <Header size="5" value="Ôm sát phần xe nhìn thấy; đáy chạm mép lốp tiếp đất khi thấy rõ. Không bao bóng đổ, quầng đèn hoặc phản chiếu." />
+    <Header size="5" value="Xe 2 bánh: bao cả người lái, người ngồi sau và xe. Bao cả hàng hóa gắn liền với xe." />
+    <Header size="5" value="Bỏ qua xe bị che hơn 70% hoặc box cao dưới 20 px trên ảnh gốc. Không đoán phần bị che; không vẽ vượt biên ảnh." />
+    <Header size="5" value="Pickup → car; xe khách 16 chỗ → bus; xe máy điện cỡ lớn → motorcycle; xe đạp điện nhỏ → electric_bicycle." />
+  </View>
+
+  <RectangleLabels name="label" toName="image" canRotate="false" choice="single">
+    <Label value="motorcycle" category="0" background="#FFA39E" hotkey="1" hint="1 — Xe máy, mô tô, xe máy điện cỡ lớn; bao cả người ngồi trên xe" />
+    <Label value="car" category="1" background="#91CAFF" hotkey="2" hint="2 — Ô tô con, sedan, SUV, MPV và bán tải pickup" />
+    <Label value="electric_bicycle" category="2" background="#FFD591" hotkey="3" hint="3 — Xe đạp điện, xe điện mini; khung nhỏ, bình điện hoặc bàn đạp phụ" />
+    <Label value="bicycle" category="3" background="#ADC6FF" hotkey="4" hint="4 — Xe đạp cơ, không có động cơ hoặc bình điện" />
+    <Label value="bus" category="4" background="#D3ADF7" hotkey="5" hint="5 — Xe khách từ 16 chỗ, xe buýt, xe giường nằm" />
+    <Label value="truck" category="5" background="#87E8DE" hotkey="6" hint="6 — Xe tải thùng, tải ben, xe bồn; cabin và khoang chở hàng riêng" />
+    <Label value="container_truck" category="6" background="#FFADD2" hotkey="7" hint="7 — Đầu kéo và rơ-moóc/container: một box cho cả tổ hợp nhìn thấy" />
+    <Label value="special_vehicle" category="7" background="#D9D9D9" hotkey="8" hint="8 — Ba gác chở hàng, xích lô, cứu thương, cứu hỏa, xe cẩu" />
   </RectangleLabels>
+  <Image name="image" value="$image" width="100%" maxWidth="1600px"
+         zoom="true" zoomBy="1.2" zoomControl="true"
+         brightnessControl="true" contrastControl="true" crosshair="true" />
+
+  <View style="padding:12px; border:1px solid #cbd5e1; border-radius:8px; margin-top:12px">
+    <Header size="4" value="Thuộc tính từng xe — chọn một box để nhập" />
+    <Header size="5" value="Không suy ra chuyển động từ một ảnh tĩnh. Chỉ chọn chạy/dừng khi đã đối chiếu video hoặc chuỗi ảnh." />
+    <View visibleWhen="region-selected">
+      <Header size="5" value="Trạng thái chuyển động (bắt buộc cho từng box)" />
+      <Choices name="motion_state" toName="image" perRegion="true" choice="single-radio" required="true"
+               requiredMessage="Chọn trạng thái cho từng xe; dùng unknown nếu thiếu bằng chứng thời gian.">
+        <Choice value="moving" html="Đang chạy — đã đối chiếu video/chuỗi ảnh" />
+        <Choice value="stopped" html="Đang dừng — đã đối chiếu video/chuỗi ảnh" />
+        <Choice value="unknown" html="Không xác định từ ảnh hiện tại" />
+      </Choices>
+      <Header size="5" value="Che khuất (chỉ gán khi còn thấy ít nhất 30% xe)" />
+      <Choices name="occlusion" toName="image" perRegion="true" choice="single-radio" required="true">
+        <Choice value="none" html="Không bị che" />
+        <Choice value="partial_le_70" html="Bị che một phần, tối đa 70%" />
+      </Choices>
+      <Header size="5" value="Xe bị cắt bởi biên ảnh" />
+      <Choices name="truncation" toName="image" perRegion="true" choice="single-radio" required="true">
+        <Choice value="no" html="Không" />
+        <Choice value="yes" html="Có — box dừng tại biên ảnh" />
+      </Choices>
+      <Header size="5" value="Mép lốp tiếp đất — phục vụ kiểm duyệt đo tốc độ" />
+      <Choices name="ground_contact" toName="image" perRegion="true" choice="single-radio" required="true">
+        <Choice value="visible" html="Thấy rõ, đáy box đã căn đúng" />
+        <Choice value="not_visible" html="Bị che hoặc cắt — không dùng làm mẫu chuẩn điểm tiếp đất" />
+        <Choice value="uncertain" html="Khó xác định do tối, lóa hoặc nhòe — cần kiểm duyệt" />
+      </Choices>
+      <Header size="5" value="Độ chắc chắn của lớp xe" />
+      <Choices name="class_certainty" toName="image" perRegion="true" choice="single-radio" required="true">
+        <Choice value="certain" html="Đủ căn cứ phân loại" />
+        <Choice value="needs_review" html="Cần kiểm duyệt lại lớp dự kiến" />
+      </Choices>
+    </View>
+  </View>
+
+  <View style="padding:12px; border:1px solid #cbd5e1; border-radius:8px; margin-top:12px">
+    <Header size="4" value="Thông tin toàn ảnh — bắt buộc trước khi nộp" />
+    <Header size="5" value="Điều kiện ánh sáng" />
+    <Choices name="lighting" toName="image" choice="single-radio" showInline="true" required="true">
+      <Choice value="day" html="Ban ngày" />
+      <Choice value="night" html="Ban đêm" />
+      <Choice value="twilight" html="Bình minh / hoàng hôn" />
+    </Choices>
+    <Header size="5" value="Chất lượng ảnh" />
+    <Choices name="image_quality" toName="image" choice="single-radio" required="true">
+      <Choice value="usable" html="Đủ rõ để gán nhãn" />
+      <Choice value="difficult" html="Khó: tối, lóa, nhòe hoặc nén — cần kiểm duyệt" />
+      <Choice value="unusable" html="Không thể gán tin cậy — loại khỏi tập huấn luyện" />
+    </Choices>
+    <Header size="5" value="Kết quả xử lý ảnh" />
+    <Choices name="annotation_status" toName="image" choice="single-radio" required="true">
+      <Choice value="labeled" html="Đã gán đủ các xe đạt tiêu chuẩn — có box" />
+      <Choice value="negative" html="Ảnh âm đã kiểm tra — không có xe thuộc 8 lớp, không có box" />
+      <Choice value="needs_review" html="Cần kiểm duyệt — còn xe/lớp khó, hoặc chỉ có xe bị bỏ qua theo ngưỡng" />
+      <Choice value="reject" html="Loại ảnh — hỏng, quá mờ hoặc không phù hợp" />
+    </Choices>
+    <Header size="5" value="Ghi chú cho người kiểm duyệt (lý do loại, xe bỏ qua, lớp khó, bằng chứng chạy/dừng)" />
+    <TextArea name="review_note" toName="image" rows="3" maxSubmissions="1"
+              placeholder="Ví dụ: box xe điện cần xác minh; xe xa dưới 20 px; đã đối chiếu clip tại giây 12–15." />
+    <Header size="5" value="Xác nhận tự kiểm tra" />
+    <Choices name="self_check" toName="image" choice="single" required="true"
+             requiredMessage="Hãy rà soát box, thuộc tính từng xe và trạng thái toàn ảnh trước khi xác nhận.">
+      <Choice value="checked" html="Đã rà đủ xe; đúng lớp, đáy box, bóng đổ, người/hàng; đủ thuộc tính từng box và trạng thái ảnh nhất quán." />
+    </Choices>
+  </View>
 </View>

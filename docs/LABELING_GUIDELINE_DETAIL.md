@@ -67,21 +67,10 @@ Trình duyệt sẽ tự động mở tại địa chỉ: `http://localhost:8080
 2. Chuyển sang tab **Labeling Setup** $\rightarrow$ Chọn **Custom template** (hoặc nút **Code**).
 3. Xóa toàn bộ nội dung mẫu và dán đoạn XML chuẩn sau:
 
-```xml
-<View>
-  <Image name="image" value="$image" zoom="true" zoomBy="1.5" rotateControl="true"/>
-  <RectangleLabels name="label" toName="image" canRotate="false">
-    <Label value="motorcycle" background="#FFA39E" hotkey="1"/>
-    <Label value="car" background="#91CAFF" hotkey="2"/>
-    <Label value="electric_bicycle" background="#FFD591" hotkey="3"/>
-    <Label value="bicycle" background="#ADC6FF" hotkey="4"/>
-    <Label value="bus" background="#D3ADF7" hotkey="5"/>
-    <Label value="truck" background="#87E8DE" hotkey="6"/>
-    <Label value="container_truck" background="#FFADD2" hotkey="7"/>
-    <Label value="special_vehicle" background="#D9D9D9" hotkey="8"/>
-  </RectangleLabels>
-</View>
-```
+Dùng toàn bộ file XML hiện hành: [label_studio_template.xml](../annotation/label_studio_template.xml).
+Xem [hướng dẫn interface và đối chiếu yêu cầu](../annotation/LABELING_INTERFACE.md) để nhập thuộc tính từng xe,
+xử lý ảnh âm, kiểm duyệt và xuất cả JSON + YOLO. File XML là cấu hình chuẩn duy nhất;
+không dùng lại đoạn template 8 nhãn cũ vì thiếu trạng thái xe và các trường QA.
 4. Bấm **Save** để lưu lại.
 
 ---
