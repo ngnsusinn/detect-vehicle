@@ -1,0 +1,238 @@
+{
+  "runtime": "Google Colab",
+  "gpu": "Tesla T4",
+  "selected_variant": "reference-refine",
+  "validation": {
+    "mixed": {
+      "precision": 0.8535622957290242,
+      "recall": 0.6757175408679315,
+      "map50": 0.8364081730781109,
+      "map50_95": 0.5910731450842833,
+      "inference_ms_per_image": 33.631929756094856,
+      "classes": {
+        "motorcycle": {
+          "ground_truth_boxes": 565,
+          "map50": 0.7554559693943365,
+          "map50_95": 0.4768577514792562
+        },
+        "car": {
+          "ground_truth_boxes": 231,
+          "map50": 0.96305192985867,
+          "map50_95": 0.7694220347761648
+        },
+        "electric_bicycle": {
+          "ground_truth_boxes": 0,
+          "map50": null,
+          "map50_95": null
+        },
+        "bicycle": {
+          "ground_truth_boxes": 0,
+          "map50": null,
+          "map50_95": null
+        },
+        "bus": {
+          "ground_truth_boxes": 0,
+          "map50": null,
+          "map50_95": null
+        },
+        "truck": {
+          "ground_truth_boxes": 19,
+          "map50": 0.7907166199813259,
+          "map50_95": 0.526939648997429
+        },
+        "container_truck": {
+          "ground_truth_boxes": 0,
+          "map50": null,
+          "map50_95": null
+        },
+        "special_vehicle": {
+          "ground_truth_boxes": 0,
+          "map50": null,
+          "map50_95": null
+        }
+      }
+    },
+    "reference-refine": {
+      "precision": 0.8253627381102743,
+      "recall": 0.8114083763121869,
+      "map50": 0.8631013285162852,
+      "map50_95": 0.6257791075042768,
+      "inference_ms_per_image": 19.14304526828745,
+      "classes": {
+        "motorcycle": {
+          "ground_truth_boxes": 565,
+          "map50": 0.7642622021394754,
+          "map50_95": 0.48892454560759563
+        },
+        "car": {
+          "ground_truth_boxes": 231,
+          "map50": 0.9676548250915571,
+          "map50_95": 0.7760826141405939
+        },
+        "electric_bicycle": {
+          "ground_truth_boxes": 0,
+          "map50": null,
+          "map50_95": null
+        },
+        "bicycle": {
+          "ground_truth_boxes": 0,
+          "map50": null,
+          "map50_95": null
+        },
+        "bus": {
+          "ground_truth_boxes": 0,
+          "map50": null,
+          "map50_95": null
+        },
+        "truck": {
+          "ground_truth_boxes": 19,
+          "map50": 0.8573869583178232,
+          "map50_95": 0.6123301627646411
+        },
+        "container_truck": {
+          "ground_truth_boxes": 0,
+          "map50": null,
+          "map50_95": null
+        },
+        "special_vehicle": {
+          "ground_truth_boxes": 0,
+          "map50": null,
+          "map50_95": null
+        }
+      }
+    }
+  },
+  "test_images": 101,
+  "test": {
+    "previous": {
+      "precision": 0.748152729337592,
+      "recall": 0.3937345348945559,
+      "map50": 0.420518597123702,
+      "map50_95": 0.24140865811997242,
+      "inference_ms_per_image": 18.643299653463416,
+      "classes": {
+        "motorcycle": {
+          "ground_truth_boxes": 1406,
+          "map50": 0.5802501915555238,
+          "map50_95": 0.290909175826801
+        },
+        "car": {
+          "ground_truth_boxes": 681,
+          "map50": 0.8712210780713292,
+          "map50_95": 0.5646558280817423
+        },
+        "electric_bicycle": {
+          "ground_truth_boxes": 0,
+          "map50": null,
+          "map50_95": null
+        },
+        "bicycle": {
+          "ground_truth_boxes": 1,
+          "map50": 0.0,
+          "map50_95": 0.0
+        },
+        "bus": {
+          "ground_truth_boxes": 0,
+          "map50": null,
+          "map50_95": null
+        },
+        "truck": {
+          "ground_truth_boxes": 82,
+          "map50": 0.23060311886795498,
+          "map50_95": 0.1100696285713463
+        },
+        "container_truck": {
+          "ground_truth_boxes": 0,
+          "map50": null,
+          "map50_95": null
+        },
+        "special_vehicle": {
+          "ground_truth_boxes": 0,
+          "map50": null,
+          "map50_95": null
+        }
+      }
+    },
+    "retrained": {
+      "precision": 0.8762997264465293,
+      "recall": 0.5168583728933042,
+      "map50": 0.589623646656248,
+      "map50_95": 0.38119321371108583,
+      "inference_ms_per_image": 17.519296346534087,
+      "classes": {
+        "motorcycle": {
+          "ground_truth_boxes": 1406,
+          "map50": 0.7224068162297116,
+          "map50_95": 0.40834626213258585
+        },
+        "car": {
+          "ground_truth_boxes": 681,
+          "map50": 0.9558315421997504,
+          "map50_95": 0.7088037520285476
+        },
+        "electric_bicycle": {
+          "ground_truth_boxes": 0,
+          "map50": null,
+          "map50_95": null
+        },
+        "bicycle": {
+          "ground_truth_boxes": 1,
+          "map50": 0.0017425569176882662,
+          "map50_95": 0.00034851138353765327
+        },
+        "bus": {
+          "ground_truth_boxes": 0,
+          "map50": null,
+          "map50_95": null
+        },
+        "truck": {
+          "ground_truth_boxes": 82,
+          "map50": 0.6785136712778417,
+          "map50_95": 0.4072743292996723
+        },
+        "container_truck": {
+          "ground_truth_boxes": 0,
+          "map50": null,
+          "map50_95": null
+        },
+        "special_vehicle": {
+          "ground_truth_boxes": 0,
+          "map50": null,
+          "map50_95": null
+        }
+      }
+    }
+  },
+  "checkpoint_sha256": "2ffa8c8f3bb6dd93ec6ee13ce569fee71b3d8ce277f98f6742a7c1230b67072c",
+  "backends_cpu": {
+    "pytorch": {
+      "precision": 0.8762997382301323,
+      "recall": 0.516858455526581,
+      "map50": 0.589623692673677,
+      "map50_95": 0.3811931468926866,
+      "inference_ms_per_image": 64.49455544541274
+    },
+    "onnx": {
+      "precision": 0.8762997318254578,
+      "recall": 0.5168584136486957,
+      "map50": 0.589623646656248,
+      "map50_95": 0.38119321371108583,
+      "inference_ms_per_image": 51.482322771695216
+    },
+    "openvino_int8": {
+      "precision": 0.8696524350605603,
+      "recall": 0.5145024369544918,
+      "map50": 0.5885440716286205,
+      "map50_95": 0.3791041875873498,
+      "inference_ms_per_image": 48.117372276789354
+    }
+  },
+  "weights_sha256": {
+    "best.pt": "2ffa8c8f3bb6dd93ec6ee13ce569fee71b3d8ce277f98f6742a7c1230b67072c",
+    "best.onnx": "741c6c41dbb2682a7804e415510b480796715e5bf869e92a714f62a95481c542",
+    "best_int8_openvino_model/best.bin": "58f058c51e24557a91ad95a0799916c8ccdde9945c91671c071bae7423a425db",
+    "best_int8_openvino_model/best.xml": "369b16c8b24596e83154baebcf3458d7aae6c4b8b5571ef08ec73b608193a1da",
+    "best_int8_openvino_model/metadata.yaml": "d80a83bc4a430934b1f31a05e1d37cf30dec374e734661ae6a8b92cc0a7fe169"
+  },
+  "int8_calibration_images": 255
+}

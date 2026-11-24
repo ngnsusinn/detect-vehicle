@@ -25,7 +25,7 @@ class StreamCatalogTests(unittest.TestCase):
             weights.touch()
             args = ["demo", "--camera-list", str(path), "--camera-id", "40", "--headless"]
             with patch.object(sys, "argv", args), patch.object(sys, "stdout", io.TextIOWrapper(io.BytesIO())) as output, \
-                 patch("vehicle_detection.inference.demo.PROJECT_ROOT", root), \
+                 patch("vehicle_detection.inference.demo.DEFAULT_WEIGHTS", weights), \
                  patch("vehicle_detection.inference.demo.run_pipeline") as pipeline:
                 main()
                 output.flush()

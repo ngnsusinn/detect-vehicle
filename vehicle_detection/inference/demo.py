@@ -20,7 +20,7 @@ from vehicle_detection.inference.evidence import EvidenceRecorder
 from vehicle_detection.inference.speed import HomographySpeedEstimator
 from vehicle_detection.inference.stream_catalog import load_stream
 from vehicle_detection.inference.timing import FrameClock
-from vehicle_detection.paths import PROJECT_ROOT
+from vehicle_detection.paths import DEFAULT_WEIGHTS
 
 WINDOW_NAME = "Detect Vehicle - Dem xe va do toc do"
 COUNT_COLUMNS = ("video_file", "frame_index", "timestamp_s", "track_id", "class_name", "direction",
@@ -321,10 +321,9 @@ def main():
             video_input, name = load_stream(args.camera_list, args.camera_id)
             stream_id = f"camera-{args.camera_id}"
             if args.model is None:
-                trained = PROJECT_ROOT / "models/vehicle_detection/best.pt"
-                if not trained.is_file():
-                    raise ValueError("Thiếu models/vehicle_detection/best.pt. Chỉ định model bằng --model.")
-                model = str(trained)
+                if not DEFAULT_WEIGHTS.is_file():
+                    raise ValueError(f"Thiếu trọng số {DEFAULT_WEIGHTS}. Chỉ định model bằng --model.")
+                model = str(DEFAULT_WEIGHTS)
             print(f"Camera {args.camera_id} {name}".rstrip())
         else:
             source = args.video or "0"

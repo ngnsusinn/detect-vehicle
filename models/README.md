@@ -10,4 +10,7 @@ của weights. Đây là hồ sơ bàn giao thủ công, không được demo t�
 Model COCO có sẵn không có cùng mapping 8 lớp với dataset của dự án.
 Truyền đường dẫn weights rõ ràng bằng `--model` khi chạy demo.
 
-Weights và hồ sơ thực tế không được đưa lên Git; lưu bản sao ở kho chung.
+Bản triển khai `vehicle_detection/colab-retrain-20261124/` có sẵn trong Git.
+Thư mục gồm checkpoint PyTorch mặc định, bản ONNX, bộ OpenVINO INT8 và
+`backend-validation.json` chứa kết quả kiểm thử cùng SHA-256 của các tệp mô hình.
+Lưu các checkpoint khác và kết quả thí nghiệm tại kho chung.

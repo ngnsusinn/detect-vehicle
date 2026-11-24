@@ -20,9 +20,8 @@ from vehicle_detection.inference.camera_view import CameraView
 from vehicle_detection.inference.demo import open_video_source, run_pipeline
 from vehicle_detection.inference.desktop_geometry import ImageViewport, make_config, positive_number
 from vehicle_detection.inference.stream_catalog import load_stream
-from vehicle_detection.paths import OUTPUTS_DIR, PROJECT_ROOT
+from vehicle_detection.paths import DEFAULT_WEIGHTS, OUTPUTS_DIR, PROJECT_ROOT
 
-DEFAULT_WEIGHTS = PROJECT_ROOT / "models/vehicle_detection/colab-retrain-20261124/best.pt"
 PRESET_PATH = PROJECT_ROOT / "configs/cameras/traffic-monitor.local.json"
 ROAD_COLOR = "#50dbf9"
 LINE_COLOR = "#ffc45e"

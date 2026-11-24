@@ -1,2 +1,6 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Preserve the bytes covered by the deployed model checksums.
+models/vehicle_detection/colab-retrain-20261124/best_int8_openvino_model/best.xml text eol=lf
+models/vehicle_detection/colab-retrain-20261124/best_int8_openvino_model/metadata.yaml text eol=lf

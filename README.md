@@ -60,7 +60,7 @@ GPU và vị trí kết quả được mô tả trong [hướng dẫn huấn luy
 
 Nhấp đúp `run_traffic_monitor.bat`, hoặc chạy `python traffic_monitor.py` trong
 môi trường dự án. Ứng dụng mặc định dùng `models/vehicle_detection/colab-retrain-20261124/best.pt`.
-Lấy trọng số từ kho chung hoặc truyền `--model` với đường dẫn đến trọng số đã tải.
+Bản clone có sẵn trọng số mặc định, ONNX và OpenVINO INT8. Dùng `--model` nếu muốn chọn bản khác.
 
 Với camera 36, ứng dụng tự nạp hồ sơ tốc độ từ bản đồ khi khung hình khớp với
 các mốc cố định. Sau khi mở khung hình, bấm hai đầu vạch rồi chọn **Bắt đầu**.
@@ -82,12 +82,12 @@ dấu `~` vì khoảng cách lấy từ ảnh vệ tinh và chưa được kiể
 
 ## Chạy demo
 
-Đặt model đã train vào `models/vehicle_detection/best.pt`, video kiểm thử vào
-`data/evaluation/cam01/traffic.mp4`. Sao chép `configs/cameras/cam01.example.json`
+Đặt video kiểm thử vào `data/evaluation/cam01/traffic.mp4`.
+Sao chép `configs/cameras/cam01.example.json`
 thành `cam01.json` và thay bằng số đo thật của camera trước khi chạy:
 
 ```powershell
-python -m vehicle_detection.inference.demo --video data/evaluation/cam01/traffic.mp4 --model models/vehicle_detection/best.pt --calibration configs/cameras/cam01.json --output outputs/inference/cam01.mp4 --events-dir outputs/inference/cam01 --headless
+python -m vehicle_detection.inference.demo --video data/evaluation/cam01/traffic.mp4 --model models/vehicle_detection/colab-retrain-20261124/best.pt --calibration configs/cameras/cam01.json --output outputs/inference/cam01.mp4 --events-dir outputs/inference/cam01 --headless
 ```
 
 `--events-dir` ghi `counts.csv` khi xe cắt vạch và `speeds.csv` cho từng mẫu
@@ -100,14 +100,14 @@ khi chạy. Dùng `--timing pts` nếu cần bắt buộc dùng timestamp từ v
 Xem [lệnh xuất và kiểm tra model](docs/MODEL_TRAINING_PIPELINE.md#xuất-bản-onnx-và-openvino-int8).
 
 Để xử lý camera trực tiếp, truyền `--video "<URL RTSP hoặc HLS>"` cùng
-`--model models/vehicle_detection/best.pt`. Nếu đã có danh sách JSON với các
+`--model models/vehicle_detection/colab-retrain-20261124/best.pt`. Nếu đã có danh sách JSON với các
 trường `ID`, `TEN` và `STSPLINK` trong `data`, chọn một camera bằng ID:
 
 ```powershell
 python -m vehicle_detection.inference.demo --camera-list "C:\du-lieu\cameras.json" --camera-id 40
 ```
 
-Lệnh trên tự chọn `models/vehicle_detection/best.pt` nếu bỏ `--model`. Đổi
+Lệnh trên dùng cùng mô hình mặc định với ứng dụng Windows nếu bỏ `--model`. Đổi
 `40` thành ID của nguồn cần chạy. Khi đo tốc độ, truyền `--calibration` với
 cấu hình đã đo đúng camera và đúng độ phân giải của luồng.
 

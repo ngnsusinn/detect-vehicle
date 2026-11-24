@@ -168,3 +168,11 @@ tmp/
 # Mốc tĩnh và hiệu chuẩn ước lượng từ bản đồ cho camera 36.
 !/configs/cameras/camera-36.speed.json
 !/data/calibration/camera-36/view.npz
+
+# Bản YOLO11n dùng để chạy ứng dụng và demo từ bản clone.
+!/models/vehicle_detection/colab-retrain-20261124/best.pt
+!/models/vehicle_detection/colab-retrain-20261124/best.onnx
+!/models/vehicle_detection/colab-retrain-20261124/best_int8_openvino_model/best.bin
+!/models/vehicle_detection/colab-retrain-20261124/best_int8_openvino_model/best.xml
+!/models/vehicle_detection/colab-retrain-20261124/best_int8_openvino_model/metadata.yaml
+!/models/vehicle_detection/colab-retrain-20261124/backend-validation.json
