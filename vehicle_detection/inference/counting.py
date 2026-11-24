@@ -19,15 +19,13 @@ class LineCrossingCounter:
         self.total_out = 0
         self.class_counts = defaultdict(int)
 
+    def forget(self, track_id):
+        self.counted_ids.discard(track_id)
+        self.prev_positions.pop(track_id, None)
+
     def _side(self, pt):
         """Tính hướng của điểm pt so với đường thẳng p1-p2 bằng tích có hướng."""
         return (self.p2[0] - self.p1[0]) * (pt[1] - self.p1[1]) - (self.p2[1] - self.p1[1]) * (pt[0] - self.p1[0])
-
-    def _intersect(self, a, b, c, d):
-        """Kiểm tra 2 đoạn thẳng ab và cd có cắt nhau không."""
-        def ccw(p, q, r):
-            return (r[1] - p[1]) * (q[0] - p[0]) > (q[1] - p[1]) * (r[0] - p[0])
-        return (ccw(a, c, d) != ccw(b, c, d)) and (ccw(a, b, c) != ccw(a, b, d))
 
     def update(self, track_id, current_pt, cls_name):
         """
@@ -37,28 +35,29 @@ class LineCrossingCounter:
         if track_id in self.counted_ids:
             return None
 
-        prev_pt = self.prev_positions.get(track_id)
-        self.prev_positions[track_id] = current_pt
-
-        if prev_pt is None:
+        side = self._side(current_pt)
+        if side == 0:
             return None
-
-        # Kiểm tra cắt vạch
-        if self._intersect(prev_pt, current_pt, self.p1, self.p2):
-            side_prev = self._side(prev_pt)
-            side_curr = self._side(current_pt)
-
-            if side_prev < 0 and side_curr >= 0:
-                direction = "IN"
-                self.total_in += 1
-            else:
-                direction = "OUT"
-                self.total_out += 1
-
-            self.counted_ids.add(track_id)
-            self.class_counts[cls_name] += 1
-            return direction
-
-        return None
+        previous = self.prev_positions.get(track_id)
+        self.prev_positions[track_id] = (current_pt, side)
+        if previous is None or (previous[1] < 0) == (side < 0):
+            return None
+        point, previous_side = previous
+        fraction = previous_side / (previous_side - side)
+        crossing = np.asarray(point) + fraction * (np.asarray(current_pt) - point)
+        line = self.p2 - self.p1
+        projection = np.dot(crossing - self.p1, line)
+        if not 0 <= projection <= np.dot(line, line):
+            return None
+        if side > 0:
+            direction = "IN"
+            self.total_in += 1
+        else:
+            direction = "OUT"
+            self.total_out += 1
+        self.counted_ids.add(track_id)
+        del self.prev_positions[track_id]
+        self.class_counts[cls_name] += 1
+        return direction
 
 

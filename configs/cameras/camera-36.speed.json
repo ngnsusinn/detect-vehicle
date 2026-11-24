@@ -1,0 +1,88 @@
+{
+  "camera_id": "camera-36",
+  "image_size": [
+    1920,
+    1080
+  ],
+  "speed_enabled": true,
+  "speed_source": "map_estimate",
+  "source_points_px": [
+    [
+      625,
+      253
+    ],
+    [
+      1198,
+      269
+    ],
+    [
+      1535,
+      595
+    ],
+    [
+      275,
+      550
+    ]
+  ],
+  "target_points_m": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      11.652,
+      -0.874
+    ],
+    [
+      12.526,
+      11.36
+    ],
+    [
+      -0.583,
+      10.778
+    ]
+  ],
+  "measurement_note": "Ước lượng từ bốn góc mép đường trên khung hình camera và ảnh vệ tinh Esri World Imagery. Mép vỉa hè gần bên phải bị tán cây che một phần. Chưa đối chiếu khoảng cách thực địa hoặc vận tốc tham chiếu.",
+  "map_reference": {
+    "map_url": "https://www.google.com/maps/@?api=1&map_action=map&center=12.686219%2C108.040597&zoom=20&basemap=satellite",
+    "imagery": "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer",
+    "credits": "Esri, Maxar, Earthstar Geographics and the GIS User Community",
+    "extent_epsg_3857": [
+      12026754.904446203,
+      1423716.0888396911,
+      12027213.526615914,
+      1424174.7110094056
+    ],
+    "imagery_size_px": [
+      768,
+      768
+    ],
+    "control_points_px": [
+      [
+        453.5,
+        435.0
+      ],
+      [
+        473.5,
+        433.5
+      ],
+      [
+        475.0,
+        454.5
+      ],
+      [
+        452.5,
+        453.5
+      ]
+    ],
+    "ground_metres_per_image_pixel": 0.5825859470943775,
+    "cross_section_metres": [
+      11.7,
+      13.1
+    ],
+    "side_lengths_metres": [
+      10.8,
+      12.3
+    ]
+  }
+}

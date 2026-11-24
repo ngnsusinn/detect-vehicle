@@ -309,27 +309,50 @@ tọa độ bằng số đo thật. Không coi file example là camera đã hi�
 | `source_points_px` | 4 điểm `[x, y]` pixel theo thứ tự quanh tứ giác mặt đường |
 | `target_points_m` | 4 điểm `[X, Y]` mét tương ứng từng điểm nguồn, cùng thứ tự |
 | `count_line_px` | 2 điểm pixel nguyên, khác nhau, tạo vạch đếm |
+| `count_lines` | Danh sách vạch thay thế `count_line_px`, mỗi vạch có `line_id`, `points_px` và `speed_limit_kmh` tùy chọn |
 | `measurement_note` | Ghi chú nguồn số đo, phiên bản hiệu chuẩn |
 
 Các điểm nguồn/vạch đếm phải nằm trong ảnh. Bốn điểm nguồn và bốn điểm đích
 phải tạo tứ giác lồi không suy biến. Demo kiểm tra các điều kiện này và từ chối
 video có độ phân giải khác `image_size`; không tự scale hiệu chuẩn.
 
+Lệnh dưới đây tạo JSON và ảnh xem trước từ ảnh tham chiếu. Thay tọa độ và
+kích thước ví dụ bằng giá trị đã đo. Cặp điểm của mỗi vạch được nhập theo
+thứ tự, đổi thứ tự sẽ đảo chiều `IN` và `OUT`. Lặp `--lane` nếu có nhiều làn.
+
+```powershell
+python -m vehicle_detection.inference.calibrate --reference data/calibration/cam01/reference.jpg --camera cam01 --road 672,486 1248,486 1728,972 192,972 --meters 8 25 --lane lane1 400,756 960,756 50 --lane lane2 961,756 1520,756 60 --measurement-note 'EXAMPLE ONLY: thay bằng nguồn số đo thực địa' --output configs/cameras/cam01.json --preview outputs/reports/cam01-calibration.jpg
+```
+
 ```powershell
 python -m vehicle_detection.inference.demo --video data/evaluation/cam01/session01/traffic.mp4 --model models/vehicle_detection/best.pt --calibration configs/cameras/cam01.json --output outputs/inference/cam01_session01.mp4
 ```
 
-Homography giả định đường gần phẳng trong vùng đo. Demo hiện tính thời gian
-bằng chỉ số frame/FPS; stream rớt frame, video FPS biến thiên hoặc timestamp
-không ổn định có thể làm sai tốc độ dù tọa độ hiệu chuẩn đúng. Chưa có cơ chế
-đọc timestamp từng frame hoặc loại bỏ track ngoài vùng hiệu chuẩn, nên cần
-kiểm tra vùng đánh giá và thời gian nguồn riêng trước khi báo sai số.
+Homography giả định đường gần phẳng trong vùng đo. Demo chỉ tính tốc độ khi
+điểm neo ở trong vùng hiệu chuẩn. Với video cục bộ, `--timing auto` chọn PTS
+nếu hai frame đầu có timestamp phù hợp. Nếu thiếu PTS ở đầu, lệnh dùng FPS.
+`--timing pts` bắt buộc timestamp tăng. `--timing fps` phù hợp với nguồn có
+FPS cố định và chỉ tạo thời gian danh định nếu luồng bị rớt frame. Cơ sở thời
+gian thực tế được ghi ở `session_summary.json`.
+
+Khi nạp cấu hình đã đo, `--evidence-dir` nhận tên thư mục mới để ghi ảnh JPEG,
+clip MP4 và SHA-256 cho lượt qua vạch có tốc độ lớn hơn ngưỡng của làn.
+`evidence.json` ghi thời gian và trạng thái đủ phần trước/sau của clip. Clip
+phát theo FPS danh định. CSV và timestamp mới là dữ liệu dùng để đối sánh thời
+gian trên video có FPS biến thiên.
 
 ## 8. Dữ liệu đánh giá đếm xe và tốc độ
 
 Dùng video liên tục chưa dùng trong train/val. Ảnh trích mỗi 3 giây không đủ
 để kiểm tra toàn bộ hành trình track và việc cắt vạch. Đặt video và ground
 truth chung trong `data/evaluation/<camera_id>/<session_id>/`.
+
+```powershell
+python -m vehicle_detection.collection.record --stream '<URL RTSP/HLS>' --seconds 120 --output data/evaluation/cam01/session01/traffic.mkv
+```
+
+Lệnh sao chép luồng video vào MKV. Thời lượng tệp có thể chênh nhẹ do điểm
+khóa khung hình hoặc thời điểm nguồn kết thúc.
 
 ### 8.1. Ground truth đếm xe
 
@@ -358,11 +381,20 @@ gian có cơ sở, cùng phương tiện và đoạn thời gian của video. Gh
 pháp, sai số tham chiếu và cách đồng bộ. Không dùng chính kết quả Homography
 làm ground truth để đánh giá Homography.
 
-Demo hiện xuất video có overlay, chưa xuất tự động hai bảng CSV hoặc tự tính
-metric so với ground truth. Đây là dữ liệu cần chuẩn bị cho bước đánh giá tiếp
-theo. Báo cáo và bảng so sánh thủ công/công cụ bổ sung đặt ở `outputs/reports/`.
-Không khẳng định sai số ±3–5 km/h hoặc độ chính xác đếm cụ thể khi chưa đo trên
-dữ liệu đánh giá này.
+Thêm `--events-dir outputs/inference/cam01_session01 --headless` để xuất
+video và bảng CSV trong quá trình chạy không cần cửa sổ. `counts.csv` ghi một
+dòng mỗi track cắt vạch, kèm lớp, chiều, frame và thời gian. `speeds.csv` ghi
+một dòng mỗi mẫu đo hợp lệ. `geometry=configured` cho biết đã nạp cấu hình
+camera. `geometry=illustrative` đánh dấu hình học minh họa mặc định.
+Dùng mẫu `track_links.example.csv` để ghép ID xe được đánh dấu thủ công với
+ID ByteTrack sau khi duyệt video overlay. Mỗi ID được ghép một-một trong một
+video. Lệnh `vehicle_detection.inference.evaluate` ghép sự kiện theo video,
+vạch, hướng, lớp và dung sai thời gian. Mặc định dung sai là 0,5 giây và có
+thể chỉnh bằng `--tolerance`. Với tốc độ, lệnh lấy trung vị các mẫu trong đoạn
+đối chứng của xe đã ghép và báo MAE, RMSE, sai lệch trung bình và tỷ lệ có mẫu.
+Tốc độ dùng hình học minh họa bị từ chối. Dùng `--dataset-kind synthetic` cho
+bài kiểm tra giả lập, `external` cho nguồn đối chứng bên ngoài và `field` cho
+video thực địa của đồ án. Lưu JSON trong `outputs/reports/`.
 
 ## 9. Chốt phiên bản và sao lưu
 

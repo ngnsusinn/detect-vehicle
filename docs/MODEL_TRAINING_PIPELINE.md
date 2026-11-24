@@ -143,6 +143,62 @@ results = model.train(
 
 ---
 
+### Chạy thử trên Google Colab
+
+Tạo dataset thử trong thư mục riêng bằng PowerShell ở gốc repository. Dùng các gói đã rà soát
+và xác nhận thứ tự ID lớp của gói thiếu `classes.txt` trước khi truyền `--fallback-classes`.
+
+```powershell
+python -m vehicle_detection.data.prepare `
+  --images ../its-data/data `
+  --fallback-classes data/vehicle_detection/classes.txt `
+  --output data/pilot-colab-v1 `
+  --batch train data/label_studio/exports/cam_lane01_0300_0400.zip all `
+  --batch train data/label_studio/exports/cam_lane01_0700_0800.zip 700-749 `
+  --batch val data/label_studio/exports/cam_lane01_0700_0800.zip 760-800 `
+  --batch test data/label_studio/exports/project-1-at-2026-11-23-20-56-7c3abb45.zip all
+python -m vehicle_detection.data.validate --dataset data/pilot-colab-v1 --report outputs/reports/pilot-colab-v1.dataset.json
+python -m vehicle_detection.data.package_colab --dataset data/pilot-colab-v1 --output outputs/training/vehicle-colab-pilot-v1.zip
+```
+
+Pilot dùng 154 ảnh train, 41 ảnh validation và 101 ảnh test từ camera
+`cam_lane01` sáng 08/10/2026. Các đoạn train 0700–0749 và validation 0760–0800
+cách nhau 10 frame đã loại. Tập test dùng đoạn 0900–1000. `splits.csv` trong
+dataset ghi nguồn của từng cặp. Gói 0300–0400 chỉ có TXT, dùng thứ tự ID của
+template dự án làm giả định cho lần chạy thử. Tập train thiếu `container_truck`.
+Tập test chỉ có nhãn theo lớp `motorcycle`, `car`, `bicycle` và `truck`. Kết quả
+của pilot phản ánh một phiên quay ban ngày và một góc camera.
+
+1. Đưa `vehicle-colab-pilot-v1.zip` vào `My Drive/detect-vehicle/`.
+2. Mở [Google Colab](https://colab.research.google.com/), chọn **File → Upload notebook** và tải lên
+   [vehicle_detection_colab.ipynb](../training/vehicle_detection_colab.ipynb).
+3. Chọn **Runtime → Change runtime type → T4 GPU**, sau đó chọn **Runtime → Run all**.
+
+Notebook khởi tạo YOLO11n từ YAML, chạy tối đa 80 epoch với kích thước 640 và batch 8.
+Mỗi lần chạy lưu kết quả trong thư mục mới dưới `My Drive/detect-vehicle/runs/`.
+Khi hoàn tất, dùng `best.pt` để chạy demo. `test_metrics.json` lưu precision,
+recall, mAP và số lượng bbox tham chiếu từng lớp. Lớp thiếu nhãn test có giá trị AP `null`.
+`run.json` ghi cấu hình, GPU, phiên bản thư viện và báo cáo dữ liệu.
+
+### Xuất bản ONNX và OpenVINO INT8
+
+Lệnh dưới đây tái tạo hai bản xuất CPU từ checkpoint Colab với Ultralytics
+8.4.216. OpenVINO lấy dữ liệu hiệu chuẩn INT8 từ 154 ảnh train. Tập test được
+dùng để đo lại chất lượng sau khi lượng hóa.
+
+```powershell
+python -m pip install onnx onnxruntime openvino nncf
+python -m vehicle_detection.data.validate --dataset data/pilot-colab-v1 --config-output outputs/training/pilot-colab.local.yaml
+yolo export model=models/vehicle_detection/best.pt format=onnx imgsz=640 opset=17 simplify=False device=cpu
+yolo export model=models/vehicle_detection/best.pt format=openvino quantize=8 data=outputs/training/pilot-colab.local.yaml split=train imgsz=640 device=cpu
+yolo val model=models/vehicle_detection/best_int8_openvino_model data=outputs/training/pilot-colab.local.yaml split=test imgsz=640 batch=1 rect=False workers=0 device=cpu
+```
+
+Khi chạy demo, truyền `--model models/vehicle_detection/best.onnx` hoặc
+`--model models/vehicle_detection/best_int8_openvino_model`. Giữ cả `.xml`,
+`.bin` và `metadata.yaml` trong thư mục OpenVINO. Kết quả và SHA-256 của ba
+định dạng nằm trong `outputs/reports/backend-validation.json`.
+
 ## 5. ĐÁNH GIÁ CHẤT LƯỢNG MÔ HÌNH & TIÊU CHÍ NGHIỆM THU (KPI)
 
 | Chỉ số đánh giá | Giá trị mục tiêu | Đạt chuẩn nghiệm thu |

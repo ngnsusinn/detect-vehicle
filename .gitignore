@@ -164,3 +164,7 @@ tmp/
 !/models/README.md
 /configs/cameras/*.json
 !/configs/cameras/*.example.json
+
+# Mốc tĩnh và hiệu chuẩn ước lượng từ bản đồ cho camera 36.
+!/configs/cameras/camera-36.speed.json
+!/data/calibration/camera-36/view.npz
